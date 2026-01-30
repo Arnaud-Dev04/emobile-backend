@@ -28,7 +28,11 @@ app = FastAPI(
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
     description="Backend de l'application mobile E-Commerce Sécurisée (TON)",
     version="1.0.0",
-    lifespan=lifespan
+    lifespan=lifespan,
+    servers=[
+        {"url": "https://emobile-backend-production.up.railway.app", "description": "Production Server"},
+        {"url": "http://localhost:8000", "description": "Local Development"}
+    ]
 )
 
 # Configuration CORS
