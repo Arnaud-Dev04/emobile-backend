@@ -64,21 +64,21 @@ app.include_router(api_router, prefix=settings.API_V1_STR)
 async def root():
     logger.info("Root endpoint accessed")
     
-    # Debug environment variables
-    all_keys = list(os.environ.keys())
-    db_var_exists = "DATABASE_URL" in os.environ
+    # Import actual used URL
+    from app.db.session import database_url as actual_db_url
     
-    db_url = settings.get_database_url()
-    db_type = "PostgreSQL" if "postgres" in db_url else "SQLite"
-    masked_url = db_url.split("@")[1] if "@" in db_url else "local"
+    # Debug environment variables
+    env_url = os.getenv("DATABASE_URL")
+    
+    settings_url = settings.get_database_url()
     
     return {
         "message": "Bienvenue sur l'API E-Mobile", 
         "status": "online",
-        "debug_db": db_type,
-        "debug_host": masked_url,
-        "env_has_database_url": db_var_exists,
-        "env_keys": all_keys # Check if RAILWAY_ or similar vars exist
+        "debug_session_url": actual_db_url.split("@")[1] if "@" in actual_db_url else actual_db_url,
+        "debug_settings_url": settings_url.split("@")[1] if "@" in settings_url else settings_url,
+        "debug_env_url_prefix": env_url[:20] if env_url else "None",
+        "env_has_database_url": "DATABASE_URL" in os.environ
     }
 
 @app.get("/health")
