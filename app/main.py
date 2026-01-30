@@ -62,7 +62,15 @@ app.include_router(api_router, prefix=settings.API_V1_STR)
 @app.get("/")
 async def root():
     logger.info("Root endpoint accessed")
-    return {"message": "Bienvenue sur l'API E-Mobile", "status": "online"}
+    db_url = settings.get_database_url()
+    db_type = "PostgreSQL" if "postgres" in db_url else "SQLite"
+    masked_url = db_url.split("@")[1] if "@" in db_url else "local"
+    return {
+        "message": "Bienvenue sur l'API E-Mobile", 
+        "status": "online",
+        "debug_db": db_type,
+        "debug_host": masked_url
+    }
 
 @app.get("/health")
 async def health_check():
