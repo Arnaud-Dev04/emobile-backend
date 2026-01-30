@@ -59,10 +59,73 @@ async def log_requests(request: Request, call_next):
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
-@app.get("/")
+from fastapi.responses import HTMLResponse
+
+@app.get("/", response_class=HTMLResponse)
 async def root():
     logger.info("Root endpoint accessed")
-    return {"message": "Bienvenue sur l'API E-Mobile", "status": "online"}
+    return """
+    <!DOCTYPE html>
+    <html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>E-Mobile API</title>
+        <style>
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 100vh;
+                margin: 0;
+                text-align: center;
+            }
+            .container {
+                background: rgba(255, 255, 255, 0.1);
+                padding: 2rem;
+                border-radius: 15px;
+                backdrop-filter: blur(10px);
+                box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+                border: 1px solid rgba(255, 255, 255, 0.18);
+                max-width: 600px;
+            }
+            h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+            p { font-size: 1.2rem; opacity: 0.9; }
+            .btn {
+                display: inline-block;
+                background: white;
+                color: #764ba2;
+                padding: 10px 20px;
+                border-radius: 25px;
+                text-decoration: none;
+                font-weight: bold;
+                margin-top: 20px;
+                transition: transform 0.2s;
+            }
+            .btn:hover { transform: scale(1.05); }
+            .status {
+                margin-top: 15px;
+                font-size: 0.9rem;
+                color: #4ade80;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>E-Mobile API 🚀</h1>
+            <p>Le backend puissant de votre application E-Commerce.</p>
+            <p>L'API est en ligne et connectée à PostgreSQL.</p>
+            <div class="status">● Système Opérationnel</div>
+            <br>
+            <a href="/docs" class="btn">Voir la Documentation API (Swagger)</a>
+        </div>
+    </body>
+    </html>
+    """
 
 @app.get("/health")
 async def health_check():
