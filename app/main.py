@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import logging
+import os
 from contextlib import asynccontextmanager
 from app.api.v1.api import api_router
 from app.core.config import settings
@@ -62,14 +63,22 @@ app.include_router(api_router, prefix=settings.API_V1_STR)
 @app.get("/")
 async def root():
     logger.info("Root endpoint accessed")
+    
+    # Debug environment variables
+    all_keys = list(os.environ.keys())
+    db_var_exists = "DATABASE_URL" in os.environ
+    
     db_url = settings.get_database_url()
     db_type = "PostgreSQL" if "postgres" in db_url else "SQLite"
     masked_url = db_url.split("@")[1] if "@" in db_url else "local"
+    
     return {
         "message": "Bienvenue sur l'API E-Mobile", 
         "status": "online",
         "debug_db": db_type,
-        "debug_host": masked_url
+        "debug_host": masked_url,
+        "env_has_database_url": db_var_exists,
+        "env_keys": all_keys # Check if RAILWAY_ or similar vars exist
     }
 
 @app.get("/health")
