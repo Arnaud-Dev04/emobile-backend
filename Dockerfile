@@ -15,9 +15,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copie du code source
 COPY . .
 
-# Port par défaut (Railway le remplace avec $PORT)
+# Port par défaut
 ENV PORT=8000
 EXPOSE 8000
 
-# Commande de lancement - utilise $PORT de Railway
-CMD uvicorn app.main:app --host 0.0.0.0 --port $PORT
+# Commande de lancement - utilise /bin/sh pour interpréter $PORT
+CMD ["/bin/sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT}"]
+
