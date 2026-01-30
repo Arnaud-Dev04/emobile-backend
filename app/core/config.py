@@ -35,12 +35,21 @@ class Settings(BaseSettings):
 
     def get_database_url(self) -> str:
         # Priority 1: DATABASE_URL from environment (Railway)
-        if self.DATABASE_URL:
+        # Force read from os.getenv to be sure
+        env_url = os.getenv("DATABASE_URL")
+        if env_url:
             # Railway uses postgres:// but SQLAlchemy needs postgresql://
-            url = self.DATABASE_URL
+            url = env_url
             if url.startswith("postgres://"):
                 url = url.replace("postgres://", "postgresql://", 1)
             return url
+        
+        # Also check self.DATABASE_URL as backup
+        if self.DATABASE_URL:
+             url = self.DATABASE_URL
+             if url.startswith("postgres://"):
+                url = url.replace("postgres://", "postgresql://", 1)
+             return url
         
         # Priority 2: Use SQLite for local development
         return "sqlite:///./sql_app.db"
